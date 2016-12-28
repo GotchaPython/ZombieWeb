@@ -15,10 +15,10 @@ module.exports = function(app, passport) {
     });
 
 
-   app.get('/abel', isLoggedIn, function(req, res) {
-        res.render('abel.ejs', {
-            user : req.user
-        });
+   app.get('/abel', function(req, res) {
+        res.render('abel.ejs');
+        
+        
     });
 
 

@@ -90,15 +90,22 @@ box-sizing: border-box;
 
 
     <script>
-      var socket = io();
+      var socket = io('/private');
       $('form').submit(function(){
-        socket.emit('chat message', $('#m').val());
+//socket.emit("requestJoin", "private")
+     	 socket.emit('chat message', $('#m').val());
+// io.to('private').emit('chat message', $('#m').val());
+
         $('#m').val('');
         return false;
       });
+
+
       socket.on('chat message', function(msg){
         $('#messages').append($('<li>').text(msg));
       });
+
+      
 
       socket.on('zombiename', function(msg){
         $('#zombies').append($('<li>').text(msg));

